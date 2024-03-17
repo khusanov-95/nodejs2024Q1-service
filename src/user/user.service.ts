@@ -23,9 +23,9 @@ export class UserService {
     return newUser;
   }
 
-  update(id: string, updatePasswordDto: UpdatePasswordDto) {
+  update(id: string, body: UpdatePasswordDto) {
     const user = userDB.find((user) => user.id === id);
-    const { oldPassword, newPassword } = updatePasswordDto;
+    const { oldPassword, newPassword } = body;
 
     if (!user) {
       throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
