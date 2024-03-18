@@ -7,6 +7,7 @@ import { UpdatePasswordDto } from './dtos/update-user.dto';
 @Injectable()
 export class UserService {
   create(login, password) {
+    console.log(login, password, 1233);
     const id = uuidv4();
     const date = Date.now();
 
@@ -46,18 +47,21 @@ export class UserService {
   }
 
   findOne(id: string): User {
-    return userDB.find((user) => user.id === id);
+    const user = userDB.find((user) => user.id === id);
+    if (!user) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+
+    return user;
   }
 
   remove(id: string) {
-    // const user = this.findOne(id);
     const userIndex = userDB.findIndex((user) => user.id === id);
-
-    if (userIndex) {
-      userDB.splice(userIndex, 1);
-      return true;
+    if (userIndex <= 0) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
 
-    throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    userDB.splice(userIndex, 1);
+    return true;
   }
 }

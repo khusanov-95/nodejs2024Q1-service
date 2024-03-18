@@ -6,6 +6,9 @@ import {
   Put,
   Delete,
   Param,
+  ParseUUIDPipe,
+  ValidationPipe,
+  HttpCode,
 } from '@nestjs/common';
 
 import { UserService } from './user.service';
@@ -17,7 +20,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('/:id')
-  findUser(@Param('id') id: string) {
+  findUser(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.userService.findOne(id);
   }
 
@@ -27,18 +30,21 @@ export class UserController {
   }
 
   @Post()
-  createUser(@Body() body: CreateUserDto) {
+  createUser(@Body(new ValidationPipe()) body: CreateUserDto) {
     const { login, password } = body;
     this.userService.create(login, password);
   }
 
   @Put('/:id')
-  updateUser(@Param('id') id: string, @Body() body: UpdatePasswordDto) {
+  updateUser(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body(new ValidationPipe()) body: UpdatePasswordDto,
+  ) {
     this.userService.update(id, body);
   }
 
   @Delete('/:id')
-  removeUser(@Param('id') id: string) {
+  removeUser(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.userService.remove(id);
   }
 }
