@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class createTrackDto {
+export class CreateTrackDto {
   @IsString()
   name: string; // previous password
 

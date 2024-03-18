@@ -37,17 +37,21 @@ export class AlbumService {
   }
 
   findOne(id: string): Album {
-    return albumDB.find((user) => user.id === id);
+    const album = albumDB.find((user) => user.id === id);
+    if (!album) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+    return album;
   }
 
   remove(id: string) {
     const albumIndex = albumDB.findIndex((album) => album.id === id);
 
-    if (albumIndex) {
-      albumDB.splice(albumIndex, 1);
-      return true;
+    if (albumIndex <= 0) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
 
-    throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    albumDB.splice(albumIndex, 1);
+    return true;
   }
 }

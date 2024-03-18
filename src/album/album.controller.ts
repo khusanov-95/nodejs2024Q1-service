@@ -6,6 +6,8 @@ import {
   Put,
   Delete,
   Param,
+  ParseUUIDPipe,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dtos/create-album.dto';
@@ -16,7 +18,7 @@ export class AlbumController {
   constructor(private albumService: AlbumService) {}
 
   @Get('/:id')
-  findAlbum(@Param('id') id: string) {
+  findAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.albumService.findOne(id);
   }
 
@@ -26,18 +28,21 @@ export class AlbumController {
   }
 
   @Post()
-  createAlbum(@Body() body: CreateAlbumDto) {
+  createAlbum(@Body(new ValidationPipe()) body: CreateAlbumDto) {
     const { name, year, artistId } = body;
     this.albumService.create(name, year, artistId);
   }
 
   @Put('/:id')
-  updateAlbum(@Param('id') id: string, @Body() body: UpdateAlbumDto) {
+  updateAlbum(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() body: UpdateAlbumDto,
+  ) {
     this.albumService.update(id, body);
   }
 
   @Delete('/:id')
-  removeAlbum(@Param('id') id: string) {
+  removeAlbum(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.albumService.remove(id);
   }
 }

@@ -1,13 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
-import { createTrackDto } from './dtos/create-track.dto';
+import { CreateTrackDto } from './dtos/create-track.dto';
 import { trackDB } from 'src/db/fakeDB';
 import { UpdateTrackDto } from './dtos/update-track.dto';
 import { Track } from './track.interface';
 
 @Injectable()
 export class TrackService {
-  create(body: createTrackDto) {
+  create(body: CreateTrackDto) {
     const id = uuidv4();
 
     const { name, artistId, albumId, duration } = body;
@@ -40,18 +40,20 @@ export class TrackService {
   }
 
   findOne(id: string): Track {
-    return trackDB.find((user) => user.id === id);
+    const track = trackDB.find((user) => user.id === id);
+    if (!track) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+    return track;
   }
 
   remove(id: string) {
-    // const user = this.findOne(id);
     const trackIndex = trackDB.findIndex((track) => track.id === id);
-
-    if (trackIndex) {
-      trackDB.splice(trackIndex, 1);
-      return true;
+    if (trackIndex <= 0) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
 
-    throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    trackDB.splice(trackIndex, 1);
+    return true;
   }
 }
